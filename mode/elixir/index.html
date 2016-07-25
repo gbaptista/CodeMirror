@@ -40,6 +40,30 @@ end
 defmodule Abs do
   def best, do: "B"
 end
+
+defmodule Chop do
+  def guess(answer, range, guessed \\ 0)
+
+  def guess(answer, _, guessed) when guessed == answer,
+    do: IO.puts answer
+
+  def guess(answer, _first..last, guessed) when guessed < answer,
+      do: _guess(answer, (guessed+1)..last, guessed)
+
+  def guess(answer, first.._last, guessed) when guessed > answer,
+      do: _guess(answer, first..(guessed-1), guessed)
+
+  defp _guess(answer, first..last, _) do
+    guessed = first + div(last-first, 2)
+    IO.inspect "Is it #{guessed}"
+    guess(answer, first..last, guessed)
+  end
+end
+
+
+Chop.guess(273, 1..1000)
+IO.puts '------------'
+Chop.guess(798, 1..1000)
 </textarea></form>
     <script>
       var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
