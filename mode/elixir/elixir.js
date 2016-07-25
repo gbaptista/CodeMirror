@@ -250,7 +250,7 @@ CodeMirror.defineMode("elixir", function(config) {
           : (state.lastTok == "def" || state.lastTok == "defmodule" || state.lastTok == "defmacro" || state.lastTok == "defp" || state.varList) ? "def"
           : "variable";
         if (style == "keyword") {
-          if (indentWords.propertyIsEnumerable(word) && !(new RegExp(word + '.*,\\s*do:|' + word + '.*,\\s*$')).test(stream.string)) {
+          if (indentWords.propertyIsEnumerable(word) && !(new RegExp(word + '.*,\\s*do:|' + word + '.*[,\\)]\\s*$')).test(stream.string)) {
             kwtype = "indent";
           }
           else if (dedentWords.propertyIsEnumerable(word)) kwtype = "dedent";
