@@ -36,6 +36,10 @@ defmodule Parallel do
     |> Enum.map(&Task.await/1)
   end
 end
+
+defmodule Abs do
+  def best, do: "B"
+end
 </textarea></form>
     <script>
       var editor = CodeMirror.fromTextArea(document.getElementById("code"), {

@@ -251,7 +251,9 @@ CodeMirror.defineMode("elixir", function(config) {
           : "variable";
         if (style == "keyword") {
           thisTok = word;
-          if (indentWords.propertyIsEnumerable(word)) kwtype = "indent";
+          if (indentWords.propertyIsEnumerable(word) && !/,\s*\n*\s*do:/.test(stream.string)) {
+            kwtype = "indent";
+          }
           else if (dedentWords.propertyIsEnumerable(word)) kwtype = "dedent";
           else if ((word == "if" || word == "unless") && stream.column() == stream.indentation())
             kwtype = "indent";
@@ -277,7 +279,7 @@ CodeMirror.defineMode("elixir", function(config) {
       var firstChar = textAfter && textAfter.charAt(0);
       var ct = state.context;
       var closing = ct.type == matching[firstChar] ||
-        ct.type == "keyword" && /^(?:end|until|else|elsif|when|rescue|,\s+\n\s++do:)\b/.test(textAfter);
+        ct.type == "keyword" && /^(?:end|until|else|elsif|when|rescue)\b/.test(textAfter);
       return ct.indented + (closing ? 0 : config.indentUnit) +
         (state.continuedLine ? config.indentUnit : 0);
     },
