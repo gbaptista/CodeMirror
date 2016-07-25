@@ -18,17 +18,17 @@ CodeMirror.defineMode("elixir", function(config) {
     return o;
   }
   var keywords = wordObj([
-    "alias", "and", "BEGIN", "begin", "break", "case", "class", "def", "defmodule", "defined?", "do", "else",
+    "alias", "and", "BEGIN", "begin", "break", "case", "def", "defmodule", "defmacro", "defp", "defined?", "do", "else",
     "elsif", "END", "end", "ensure", "false", "for", "if", "in", "module", "next", "not", "or",
     "redo", "rescue", "retry", "return", "self", "super", "then", "true", "undef", "unless",
     "until", "when", "while", "yield", "nil", "raise", "throw", "catch", "fail", "loop", "callcc",
     "caller", "lambda", "fn", "proc", "public", "protected", "private", "require", "load",
     "require_relative", "extend", "autoload", "__END__", "__FILE__", "__LINE__", "__dir__"
   ]);
-  var indentWords = wordObj(["def", "defmodule", "class", "case", "for", "while", "until", "module", "then",
+  var indentWords = wordObj(["def", "defmodule", "defmacro", "defp", "case", "for", "while", "until", "module", "then",
                              "catch", "loop", "proc", "begin"]);
   var dedentWords = wordObj(["end", "until"]);
-  var matching = {"[": "]", "{": "}", "(": ")"};
+  var matching = {"[": "]", "{": "}", "(": ")", "/": "/"};
   var curPunc;
 
   function chain(newtok, stream, state) {
@@ -144,6 +144,8 @@ CodeMirror.defineMode("elixir", function(config) {
       return null;
     } else if (ch == "-" && stream.eat(">")) {
       return "arrow";
+    } else if (ch == "|" && stream.eat(">")) {
+      return "arrow";
     } else if (/[=+\-\/*:\.^%<>~|]/.test(ch)) {
       var more = stream.eatWhile(/[=+\-\/*:\.^%<>~|]/);
       if (ch == "." && !more) curPunc = ".";
@@ -245,7 +247,7 @@ CodeMirror.defineMode("elixir", function(config) {
         style = state.lastTok == "." ? "property"
           : keywords.propertyIsEnumerable(stream.current()) ? "keyword"
           : /^[A-Z]/.test(word) ? "tag"
-          : (state.lastTok == "def" || state.lastTok == "defmodule" || state.lastTok == "class" || state.varList) ? "def"
+          : (state.lastTok == "def" || state.lastTok == "defmodule" || state.lastTok == "defmacro" || state.lastTok == "defp" || state.varList) ? "def"
           : "variable";
         if (style == "keyword") {
           thisTok = word;
@@ -275,7 +277,7 @@ CodeMirror.defineMode("elixir", function(config) {
       var firstChar = textAfter && textAfter.charAt(0);
       var ct = state.context;
       var closing = ct.type == matching[firstChar] ||
-        ct.type == "keyword" && /^(?:end|until|else|elsif|when|rescue)\b/.test(textAfter);
+        ct.type == "keyword" && /^(?:end|until|else|elsif|when|rescue|,\s+\n\s++do:)\b/.test(textAfter);
       return ct.indented + (closing ? 0 : config.indentUnit) +
         (state.continuedLine ? config.indentUnit : 0);
     },
